@@ -107,10 +107,6 @@ ThreadsAffinityType *FindAffinityByInterface(
 void TopologyDestroy(void);
 uint16_t AffinityGetNextCPU(ThreadVars *tv, ThreadsAffinityType *taf);
 uint16_t UtilAffinityGetAffinedCPUNum(ThreadsAffinityType *taf);
-#ifdef HAVE_DPDK
-uint16_t UtilAffinityCpusOverlap(ThreadsAffinityType *taf1, ThreadsAffinityType *taf2);
-void UtilAffinityCpusExclude(ThreadsAffinityType *mod_taf, ThreadsAffinityType *static_taf);
-#endif /* HAVE_DPDK */
 
 int BuildCpusetWithCallback(
         const char *name, SCConfNode *node, void (*Callback)(int i, void *data), void *data);

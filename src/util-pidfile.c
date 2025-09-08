@@ -117,15 +117,12 @@ int SCPidfileTestRunning(const char *pid_filename)
         }
     }
 
-#ifndef OS_WIN32
     pid_t pidv;
     if (fscanf(pf, "%d", &pidv) == 1 && kill(pidv, 0) == 0) {
         SCLogError("pid file '%s' exists and Suricata appears to be running. "
                    "Aborting!",
                 pid_filename);
-    } else
-#endif
-    {
+    } else {
         SCLogError("pid file '%s' exists but appears stale. "
                    "Make sure Suricata is not running and then remove %s. "
                    "Aborting!",

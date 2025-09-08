@@ -28,7 +28,6 @@
 
 int UtilSignalBlock(int signum)
 {
-#ifndef OS_WIN32
     sigset_t x;
     if (sigemptyset(&x) < 0)
         return -1;
@@ -39,13 +38,11 @@ int UtilSignalBlock(int signum)
      */
     if (pthread_sigmask(SIG_BLOCK, &x, NULL) != 0)
         return -1;
-#endif
     return 0;
 }
 
 int UtilSignalUnblock(int signum)
 {
-#ifndef OS_WIN32
     sigset_t x;
     if (sigemptyset(&x) < 0)
         return -1;
@@ -53,22 +50,16 @@ int UtilSignalUnblock(int signum)
         return -1;
     if (pthread_sigmask(SIG_UNBLOCK, &x, NULL) != 0)
         return -1;
-#endif
     return 0;
 }
 
 void UtilSignalHandlerSetup(int sig, void (*handler)(int))
 {
-#ifdef OS_WIN32
-	signal(sig, handler);
-#else
     struct sigaction action;
     memset(&action, 0x00, sizeof(struct sigaction));
-
     action.sa_handler = handler;
     sigemptyset(&(action.sa_mask));
     sigaddset(&(action.sa_mask),sig);
     action.sa_flags = 0;
     sigaction(sig, &action, 0);
-#endif /* OS_WIN32 */
 }

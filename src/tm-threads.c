@@ -786,16 +786,6 @@ void TmThreadSetPrio(ThreadVars *tv)
 {
     SCEnter();
 #ifndef __CYGWIN__
-#ifdef OS_WIN32
-	if (0 == SetThreadPriority(GetCurrentThread(), tv->thread_priority)) {
-            SCLogError("Error setting priority for "
-                       "thread %s: %s",
-                    tv->name, strerror(errno));
-    } else {
-        SCLogDebug("Priority set to %"PRId32" for thread %s",
-                   tv->thread_priority, tv->name);
-    }
-#else
     int ret = nice(tv->thread_priority);
     if (ret == -1) {
         SCLogError("Error setting nice value %d "
@@ -805,7 +795,6 @@ void TmThreadSetPrio(ThreadVars *tv)
         SCLogDebug("Nice value set to %"PRId32" for thread %s",
                    tv->thread_priority, tv->name);
     }
-#endif /* OS_WIN32 */
 #endif
     SCReturn;
 }

@@ -419,7 +419,6 @@ noinst_HEADERS = \
 	respond-reject.h \
 	runmode-af-packet.h \
 	runmode-af-xdp.h \
-	runmode-dpdk.h \
 	runmode-erf-dag.h \
 	runmode-erf-file.h \
 	runmode-ipfw.h \
@@ -431,13 +430,11 @@ noinst_HEADERS = \
 	runmode-pcap.h \
 	runmode-unittests.h \
 	runmode-unix-socket.h \
-	runmode-windivert.h \
 	runmodes.h \
 	rust-context.h \
 	rust.h \
 	source-af-packet.h \
 	source-af-xdp.h \
-	source-dpdk.h \
 	source-erf-dag.h \
 	source-erf-file.h \
 	source-ipfw.h \
@@ -450,8 +447,6 @@ noinst_HEADERS = \
 	source-pcap-file-helper.h \
 	source-pcap-file.h \
 	source-pcap.h \
-	source-windivert-prototypes.h \
-	source-windivert.h \
 	stream-tcp-cache.h \
 	stream-tcp-inline.h \
 	stream-tcp-list.h \
@@ -501,14 +496,6 @@ noinst_HEADERS = \
 	util-debug.h \
 	util-detect.h \
 	util-device.h \
-	util-dpdk-bonding.h \
-	util-dpdk-common.h \
-	util-dpdk-i40e.h \
-	util-dpdk-ice.h \
-	util-dpdk-ixgbe.h \
-	util-dpdk-mlx5.h \
-	util-dpdk-rss.h \
-	util-dpdk.h \
 	util-ebpf.h \
 	util-enum.h \
 	util-error.h \
@@ -614,11 +601,7 @@ noinst_HEADERS = \
 	util-unittest.h \
 	util-validate.h \
 	util-var-name.h \
-	util-var.h \
-	win32-misc.h \
-	win32-service.h \
-	win32-syscall.h \
-	win32-syslog.h
+	util-var.h
 
 libsuricata_c_a_SOURCES = \
 	alert-debuglog.c \
@@ -1016,7 +999,6 @@ libsuricata_c_a_SOURCES = \
 	respond-reject.c \
 	runmode-af-packet.c \
 	runmode-af-xdp.c \
-	runmode-dpdk.c \
 	runmode-erf-dag.c \
 	runmode-erf-file.c \
 	runmode-ipfw.c \
@@ -1028,12 +1010,10 @@ libsuricata_c_a_SOURCES = \
 	runmode-pcap.c \
 	runmode-unittests.c \
 	runmode-unix-socket.c \
-	runmode-windivert.c \
 	runmodes.c \
 	rust-context.c \
 	source-af-packet.c \
 	source-af-xdp.c \
-	source-dpdk.c \
 	source-erf-dag.c \
 	source-erf-file.c \
 	source-ipfw.c \
@@ -1045,7 +1025,6 @@ libsuricata_c_a_SOURCES = \
 	source-pcap-file-helper.c \
 	source-pcap-file.c \
 	source-pcap.c \
-	source-windivert.c \
 	stream-tcp-cache.c \
 	stream-tcp-inline.c \
 	stream-tcp-list.c \
@@ -1085,14 +1064,6 @@ libsuricata_c_a_SOURCES = \
 	util-debug.c \
 	util-detect.c \
 	util-device.c \
-	util-dpdk-bonding.c \
-	util-dpdk-common.c \
-	util-dpdk-i40e.c \
-	util-dpdk-ice.c \
-	util-dpdk-ixgbe.c \
-	util-dpdk-mlx5.c \
-	util-dpdk-rss.c \
-	util-dpdk.c \
 	util-ebpf.c \
 	util-enum.c \
 	util-error.c \
@@ -1201,10 +1172,7 @@ libsuricata_c_a_SOURCES = \
 	util-unittest-helper.c \
 	util-unittest.c \
 	util-var-name.c \
-	util-var.c \
-	win32-misc.c \
-	win32-service.c \
-	win32-syscall.c
+	util-var.c
 
 EXTRA_DIST = \
 	${PRIVATE_INCLUDES} \

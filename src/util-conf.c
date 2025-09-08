@@ -40,14 +40,7 @@ const char *SCConfigGetLogDirectory(void)
     const char *log_dir = NULL;
 
     if (SCConfGet("default-log-dir", &log_dir) != 1) {
-#ifdef OS_WIN32
-        log_dir = _getcwd(NULL, 0);
-        if (log_dir == NULL) {
-            log_dir = DEFAULT_LOG_DIR;
-        }
-#else
         log_dir = DEFAULT_LOG_DIR;
-#endif /* OS_WIN32 */
     }
 
     return log_dir;
@@ -82,14 +75,7 @@ const char *ConfigGetDataDirectory(void)
     const char *data_dir = NULL;
 
     if (SCConfGet("default-data-dir", &data_dir) != 1) {
-#ifdef OS_WIN32
-        data_dir = _getcwd(NULL, 0);
-        if (data_dir == NULL) {
-            data_dir = DEFAULT_DATA_DIR;
-        }
-#else
         data_dir = DEFAULT_DATA_DIR;
-#endif /* OS_WIN32 */
     }
 
     SCLogDebug("returning '%s'", data_dir);

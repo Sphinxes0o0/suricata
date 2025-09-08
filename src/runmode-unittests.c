@@ -118,14 +118,6 @@
 
 #include "output-json-stats.h"
 
-#ifdef OS_WIN32
-#include "win32-syscall.h"
-#endif
-
-#ifdef WINDIVERT
-#include "source-windivert.h"
-#endif
-
 #endif /* UNITTESTS */
 
 void TmqhSetup (void);
@@ -210,12 +202,6 @@ static void RegisterUnittests(void)
     StreamingBufferRegisterTests();
     MacSetRegisterTests();
     FlowRateRegisterTests();
-#ifdef OS_WIN32
-    Win32SyscallRegisterTests();
-#endif
-#ifdef WINDIVERT
-    SourceWinDivertRegisterTests();
-#endif
     SCProtoNameRegisterTests();
     UtilCIDRTests();
     OutputJsonStatsRegisterTests();

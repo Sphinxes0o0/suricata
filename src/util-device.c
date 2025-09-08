@@ -20,7 +20,6 @@
 #include "util-device-private.h"
 #include "util-ioctl.h"
 #include "util-misc.h"
-#include "util-dpdk.h"
 
 #include "device-storage.h"
 #include "util-debug.h"
@@ -337,9 +336,6 @@ int LiveDeviceListClean(void)
     LiveDevice *pd, *tpd;
 
     /* dpdk: need to close all devices before freeing them. */
-    TAILQ_FOREACH (pd, &live_devices, next) {
-        DPDKCloseDevice(pd);
-    }
     TAILQ_FOREACH_SAFE(pd, &live_devices, next, tpd) {
         if (live_devices_stats) {
             SCLogNotice("%s: packets: %" PRIu64 ", drops: %" PRIu64
@@ -352,7 +348,6 @@ int LiveDeviceListClean(void)
         }
 
         RestoreIfaceOffloading(pd);
-        DPDKFreeDevice(pd);
 
         if (pd->dev)
             SCFree(pd->dev);

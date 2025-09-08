@@ -428,11 +428,7 @@ static FILE *SCLogOpenFileFp(
         goto error_exit;
     } else {
         if (mode != 0) {
-#ifdef OS_WIN32
-            int r = _chmod(filename, (mode_t)mode);
-#else
             int r = fchmod(fileno(ret), (mode_t)mode);
-#endif
             if (r < 0) {
                 SCLogWarning("Could not chmod %s to %o: %s", filename, mode, strerror(errno));
             }

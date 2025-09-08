@@ -35,23 +35,6 @@
 #include "util-byte.h"
 #include "util-debug.h"
 
-#ifdef OS_WIN32
-
-void CoredumpEnable(void) {
-}
-
-int32_t CoredumpLoadConfig(void) {
-    /* todo: use the registry to get/set dump configuration */
-    SCLogInfo("Configuring core dump is not yet supported on Windows.");
-    return 0;
-}
-
-void CoredumpConfigRegisterTests(void)
-{
-}
-
-#else
-
 static bool unlimited = false;
 static rlim_t max_dump = 0;
 
@@ -420,5 +403,3 @@ void CoredumpConfigRegisterTests(void)
     UtRegisterTest("CoredumpConfigTest05", CoredumpConfigTest05);
 #endif /* UNITTESTS */
 }
-
-#endif /* OS_WIN32 */

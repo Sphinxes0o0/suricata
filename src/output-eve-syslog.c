@@ -30,11 +30,6 @@
 #include "output-eve-syslog.h"
 #include "util-syslog.h"
 
-#ifdef OS_WIN32
-void SyslogInitialize(void)
-{
-}
-#else /* !OS_WIN32 */
 #define OUTPUT_NAME "syslog"
 
 typedef struct Context_ {
@@ -112,4 +107,3 @@ void SyslogInitialize(void)
         FatalError("Failed to register EVE file type: %s", OUTPUT_NAME);
     }
 }
-#endif /* !OS_WIN32 */

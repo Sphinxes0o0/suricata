@@ -50,14 +50,6 @@
  * would be considered timed out.
  */
 
-#ifdef OS_WIN32
-/* for MinGW we need to set _POSIX_C_SOURCE before including
- * sys/time.h. */
-#ifndef _POSIX_C_SOURCE
-#define _POSIX_C_SOURCE 200809L
-#endif
-#endif
-
 #include "suricata-common.h"
 #include "suricata.h"
 #include "detect.h"
@@ -78,6 +70,7 @@ struct tm *SCUtcTime(time_t timep, struct tm *result);
 
 void TimeInit(void)
 {
+    printf("TimeInit\n");
     SCSpinInit(&current_time_spinlock, 0);
 
     /* Initialize Time Zone settings. */
@@ -187,25 +180,6 @@ void TimeSetIncrementTime(uint32_t tv_sec)
 }
 #endif
 
-#ifdef OS_WIN32
-/** \internal
- *  \brief wrapper around strftime on Windows to provide output
- *         compatible with posix %z
- */
-static inline void WinStrftime(const SCTime_t ts, const struct tm *t, char *str, size_t size)
-{
-    char time_fmt[64] = { 0 };
-    char tz[6] = { 0 };
-    const long int tzdiff = -_timezone;
-    const int h = abs(_timezone) / 3600 + _daylight;
-    const int m = (abs(_timezone) % 3600) / 60;
-    snprintf(tz, sizeof(tz), "%c%02d%02d", tzdiff < 0 ? '-' : '+', h, m);
-    strftime(time_fmt, sizeof(time_fmt), "%Y-%m-%dT%H:%M:%S.%%06u", t);
-    snprintf(str, size, time_fmt, SCTIME_USECS(ts));
-    strlcat(str, tz, size); // append our timezone
-}
-#endif
-
 void CreateIsoTimeString(const SCTime_t ts, char *str, size_t size)
 {
     time_t time = SCTIME_SECS(ts);
@@ -214,14 +188,10 @@ void CreateIsoTimeString(const SCTime_t ts, char *str, size_t size)
     struct tm *t = (struct tm*)SCLocalTime(time, &local_tm);
 
     if (likely(t != NULL)) {
-#ifdef OS_WIN32
-        WinStrftime(ts, t, str, size);
-#else
         char time_fmt[64] = { 0 };
         int64_t usec = SCTIME_USECS(ts);
         strftime(time_fmt, sizeof(time_fmt), "%Y-%m-%dT%H:%M:%S.%%06" PRIi64 "%z", t);
         snprintf(str, size, time_fmt, usec);
-#endif
     } else {
         snprintf(str, size, "ts-error");
     }
@@ -462,10 +432,9 @@ time_t SCMkTimeUtc (struct tm *tp)
     result += tp->tm_min;
     result *= 60;
     result += tp->tm_sec;
-#ifndef OS_WIN32
+
     if (tp->tm_gmtoff)
         result -= tp->tm_gmtoff;
-#endif
     return result;
 }
 
@@ -497,10 +466,8 @@ int SCStringPatternToTime (char *string, const char **patterns, int num_patterns
         tp->tm_hour = tp->tm_min = tp->tm_sec = 0;
         tp->tm_year = tp->tm_mon = tp->tm_mday = tp->tm_wday = INT_MIN;
         tp->tm_isdst = -1;
-#ifndef OS_WIN32
         tp->tm_gmtoff = 0;
         tp->tm_zone = NULL;
-#endif
         result = strptime(string, patterns[i], tp);
 
         if (result && *result == '\0')

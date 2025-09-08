@@ -76,23 +76,6 @@ uint16_t UtilCpuGetNumProcessorsConfigured(void)
     }
 
     return (uint16_t)nprocs;
-#elif OS_WIN32
-    int64_t nprocs = 0;
-    const char* envvar = getenv("NUMBER_OF_PROCESSORS");
-    if (envvar != NULL) {
-        if (StringParseInt64(&nprocs, 10, 0, envvar) < 0) {
-            SCLogWarning("Invalid value for number of "
-                         "processors: %s",
-                    envvar);
-            return 0;
-        }
-    }
-    if (nprocs < 1) {
-        SCLogError("Couldn't retrieve the number of cpus "
-                   "configured from the NUMBER_OF_PROCESSORS environment variable");
-        return 0;
-    }
-    return (uint16_t)nprocs;
 #else
     SCLogError("Couldn't retrieve the number of cpus "
                "configured, sysconf macro unavailable");
@@ -125,8 +108,6 @@ uint16_t UtilCpuGetNumProcessorsOnline(void)
     }
 
     return (uint16_t)nprocs;
-#elif OS_WIN32
-	return UtilCpuGetNumProcessorsConfigured();
 #else
     SCLogError("Couldn't retrieve the number of cpus online, "
                "synconf macro unavailable");

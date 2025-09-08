@@ -24,7 +24,6 @@
 #include "util-device.h"
 #include "queue.h"
 #include "util-storage.h"
-#include "util-dpdk-common.h"
 
 #define MAX_DEVNAME 10
 
@@ -45,10 +44,6 @@ typedef struct LiveDevice_ {
 
     uint32_t tenant_id;    /**< tenant id in multi-tenancy */
     uint32_t offload_orig; /**< original offload settings to restore @exit */
-#ifdef HAVE_DPDK
-    // DPDK resources that needs to be cleaned after workers are stopped and devices closed
-    DPDKDeviceResources *dpdk_vars;
-#endif
     /** storage handle as a flex array member */
     Storage storage[];
 } LiveDevice;

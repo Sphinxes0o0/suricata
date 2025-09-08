@@ -57,7 +57,7 @@
 # endif
 #endif
 
-#define SOCKET_PATH LOCAL_STATE_DIR "/run/suricata/"
+#define SOCKET_PATH LOCAL_STATE_DIR "/tmp/suricata/"
 #define SOCKET_FILENAME "suricata-command.socket"
 #define SOCKET_TARGET SOCKET_PATH SOCKET_FILENAME
 

@@ -47,10 +47,6 @@
 #include <net/if.h>
 #endif
 
-#ifdef OS_WIN32
-#include "win32-syscall.h"
-#endif
-
 /**
  * \brief output a majorant of hardware header length
  *
@@ -100,8 +96,6 @@ int GetIfaceMTU(const char *dev)
     close(fd);
     SCLogInfo("%s: MTU %d", dev, ifr.ifr_mtu);
     return ifr.ifr_mtu;
-#elif defined OS_WIN32
-    return GetIfaceMTUWin32(dev);
 #else
     /* ioctl is not defined, let's pretend returning 0 is ok */
     return 0;
@@ -673,8 +667,6 @@ int GetIfaceOffloading(const char *dev, int csum, int other)
     return GetIfaceOffloadingLinux(dev, csum, other);
 #elif defined SIOCGIFCAP
     return GetIfaceOffloadingBSD(dev);
-#elif defined OS_WIN32
-    return GetIfaceOffloadingWin32(dev, csum, other);
 #else
     return 0;
 #endif
@@ -689,8 +681,6 @@ int DisableIfaceOffloading(LiveDevice *dev, int csum, int other)
     return DisableIfaceOffloadingLinux(dev, csum, other);
 #elif defined SIOCSIFCAP
     return DisableIfaceOffloadingBSD(dev);
-#elif defined OS_WIN32
-    return DisableIfaceOffloadingWin32(dev, csum, other);
 #else
     return 0;
 #endif
@@ -704,8 +694,6 @@ void RestoreIfaceOffloading(LiveDevice *dev)
         RestoreIfaceOffloadingLinux(dev);
 #elif defined SIOCSIFCAP
         RestoreIfaceOffloadingBSD(dev);
-#elif defined OS_WIN32
-        RestoreIfaceOffloadingWin32(dev);
 #endif
     }
 }

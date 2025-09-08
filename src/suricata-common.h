@@ -166,16 +166,8 @@ typedef unsigned char u_char;
 
 #ifdef HAVE_SYSLOG_H
 #include <syslog.h>
-#else
-#ifdef OS_WIN32
-#include "win32-syslog.h"
-#endif /* OS_WIN32 */
 #endif /* HAVE_SYSLOG_H */
 
-#ifdef OS_WIN32
-#include "win32-misc.h"
-#include "win32-service.h"
-#endif /* OS_WIN32 */
 
 #if HAVE_SYS_TIME_H
 #include <sys/time.h>
@@ -233,30 +225,6 @@ typedef unsigned char u_char;
 #if !defined _X86_ && !defined __x86_64
 #define _X86_
 #endif
-#endif
-
-#if !__CYGWIN__
-#ifdef HAVE_WINSOCK2_H
-#include <winsock2.h>
-#endif
-#ifdef HAVE_WS2TCPIP_H
-#include <ws2tcpip.h>
-#endif
-#endif /* !__CYGWIN__ */
-
-#ifdef HAVE_WINDOWS_H
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0501
-#endif
-#include <windows.h>
-#endif
-
-#ifdef HAVE_W32API_WINBASE_H
-#include <w32api/winbase.h>
-#endif
-
-#ifdef HAVE_W32API_WTYPES_H
-#include <w32api/wtypes.h>
 #endif
 
 #ifndef SC_PCAP_DONT_INCLUDE_PCAP_H

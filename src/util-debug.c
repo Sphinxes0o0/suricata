@@ -73,13 +73,6 @@ SCEnumCharMap sc_log_op_iface_map[ ] = {
 };
 // clang-format on
 
-#if defined (OS_WIN32)
-/**
- * \brief Used for synchronous output on WIN32
- */
-static SCMutex sc_log_stream_lock;
-#endif /* OS_WIN32 */
-
 /**
  * \brief Transform the module name into display module name for logging
  */
@@ -161,18 +154,10 @@ static inline void SCLogPrintToStream(FILE *fd, char *msg)
         return;
     }
 
-#if defined (OS_WIN32)
-	SCMutexLock(&sc_log_stream_lock);
-#endif /* OS_WIN32 */
-
     if (fprintf(fd, "%s\n", msg) < 0)
         printf("Error writing to stream using fprintf\n");
 
     fflush(fd);
-
-#if defined (OS_WIN32)
-	SCMutexUnlock(&sc_log_stream_lock);
-#endif /* OS_WIN32 */
 }
 
 /**
@@ -851,13 +836,11 @@ static inline SCLogOPIfaceCtx *SCLogInitFileOPIface(const char *file, uint32_t u
         goto error;
     }
 
-#ifndef OS_WIN32
     if (userid != 0 || groupid != 0) {
         if (fchown(fileno(iface_ctx->file_d), userid, groupid) == -1) {
             SCLogWarning("Failed to change ownership of file %s: %s", file, strerror(errno));
         }
     }
-#endif
 
     if ((iface_ctx->file = SCStrdup(file)) == NULL) {
         goto error;
@@ -1393,12 +1376,6 @@ void SCLogInitLogModule(SCLogInitData *sc_lid)
      * environment variables at the start of the engine */
     SCLogDeInitLogModule();
 
-#if defined (OS_WIN32)
-    if (SCMutexInit(&sc_log_stream_lock, NULL) != 0) {
-        FatalError("Failed to initialize log mutex.");
-    }
-#endif /* OS_WIN32 */
-
     /* sc_log_config is a global variable */
     if ((sc_log_config = SCCalloc(1, sizeof(SCLogConfig))) == NULL) {
         FatalError("Fatal error encountered in SCLogInitLogModule. Exiting...");
@@ -1606,9 +1583,6 @@ void SCLogDeInitLogModule(void)
     /* de-init the FG filters */
     SCLogReleaseFGFilters();
 
-#if defined (OS_WIN32)
-    SCMutexDestroy(&sc_log_stream_lock);
-#endif /* OS_WIN32 */
 }
 
 void SCFatalErrorOnInitStatic(const char *arg)

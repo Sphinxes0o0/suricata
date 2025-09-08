@@ -24,8 +24,6 @@
  * Steve Grubb
  */
 
-#ifndef OS_WIN32
-
 #include "suricata-common.h"
 #include "util-debug.h"
 #include "suricata.h"
@@ -252,4 +250,3 @@ int SCPledge(void)
     return 0;
 }
 #endif /* __OpenBSD__ */
-#endif /* OS_WIN32 */

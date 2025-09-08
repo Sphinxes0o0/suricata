@@ -32,7 +32,6 @@
 #include "util-cpu.h"
 #include "util-byte.h"
 #include "util-debug.h"
-#include "util-dpdk.h"
 #include "util-unittest.h"
 
 ThreadsAffinityType thread_affinity[MAX_CPU_SET] = {
@@ -826,14 +825,6 @@ static int InterfaceGetNumaNode(ThreadVars *tv)
     }
 
     int32_t numa_id = HwLocDeviceNumaGet(topology, if_obj);
-    if (numa_id < 0 && SCRunmodeGet() == RUNMODE_DPDK) {
-        // DPDK fallback for e.g. net_bonding (vdev) PMDs
-        int32_t r = DPDKDeviceNameSetSocketID(tv->iface_name, &numa_id);
-        if (r < 0) {
-            numa_id = -1;
-        }
-    }
-
     if (numa_id < 0) {
         SCLogDebug("Unable to find NUMA node for interface %s", tv->iface_name);
     }
@@ -1053,50 +1044,6 @@ uint16_t UtilAffinityGetAffinedCPUNum(ThreadsAffinityType *taf)
 #endif
     return ncpu;
 }
-
-#ifdef HAVE_DPDK
-/**
- * Find if CPU sets overlap
- * \return 1 if CPUs overlap, 0 otherwise
- */
-uint16_t UtilAffinityCpusOverlap(ThreadsAffinityType *taf1, ThreadsAffinityType *taf2)
-{
-    ThreadsAffinityType tmptaf;
-    CPU_ZERO(&tmptaf);
-    SCMutexInit(&tmptaf.taf_mutex, NULL);
-
-    cpu_set_t tmpcset;
-
-    SCMutexLock(&taf1->taf_mutex);
-    SCMutexLock(&taf2->taf_mutex);
-    CPU_AND(&tmpcset, &taf1->cpu_set, &taf2->cpu_set);
-    SCMutexUnlock(&taf2->taf_mutex);
-    SCMutexUnlock(&taf1->taf_mutex);
-
-    for (int i = UtilCpuGetNumProcessorsOnline(); i >= 0; i--)
-        if (CPU_ISSET(i, &tmpcset)) {
-            return 1;
-        }
-    return 0;
-}
-
-/**
- * Function makes sure that CPUs of different types don't overlap by excluding
- * one affinity type from the other
- * \param mod_taf - CPU set to be modified
- * \param static_taf - static CPU set to be used only for evaluation
- */
-void UtilAffinityCpusExclude(ThreadsAffinityType *mod_taf, ThreadsAffinityType *static_taf)
-{
-    cpu_set_t tmpset;
-    SCMutexLock(&mod_taf->taf_mutex);
-    SCMutexLock(&static_taf->taf_mutex);
-    CPU_XOR(&tmpset, &mod_taf->cpu_set, &static_taf->cpu_set);
-    SCMutexUnlock(&static_taf->taf_mutex);
-    mod_taf->cpu_set = tmpset;
-    SCMutexUnlock(&mod_taf->taf_mutex);
-}
-#endif /* HAVE_DPDK */
 
 #ifdef UNITTESTS
 // avoiding Darwin/MacOS as it does not support bitwise CPU affinity

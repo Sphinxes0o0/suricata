@@ -27,11 +27,7 @@
 #include "util-debug.h"
 #include "util-path.h"
 
-#ifdef OS_WIN32
-#define DIRECTORY_SEPARATOR '\\'
-#else
 #define DIRECTORY_SEPARATOR '/'
-#endif
 
 /**
  *  \brief Check if a path is absolute
@@ -46,14 +42,6 @@ int PathIsAbsolute(const char *path)
     if (strlen(path) > 1 && path[0] == '/') {
         return 1;
     }
-
-#if (defined OS_WIN32 || defined __CYGWIN__)
-    if (strlen(path) > 2) {
-        if (isalpha((unsigned char)path[0]) && path[1] == ':') {
-            return 1;
-        }
-    }
-#endif
 
     return 0;
 }
@@ -82,13 +70,9 @@ int PathMerge(char *out_buf, size_t buf_size, const char *const dir, const char 
         return -1;
     }
 
-#if defined OS_WIN32 || defined __CYGWIN__
-    if (path[strlen(path) - 1] != '\\')
-        r = strlcat(path, "\\\\", sizeof(path));
-#else
     if (path[strlen(path) - 1] != '/')
         r = strlcat(path, "/", sizeof(path));
-#endif
+
     if (r >= sizeof(path)) {
         return -1;
     }
@@ -199,13 +183,11 @@ bool SCPathExists(const char *path)
  */
 bool SCIsRegularDirectory(const struct dirent *const dir_entry)
 {
-#ifndef OS_WIN32
     if ((dir_entry->d_type == DT_DIR) &&
         (strcmp(dir_entry->d_name, ".") != 0) &&
         (strcmp(dir_entry->d_name, "..") != 0)) {
         return true;
     }
-#endif
     return false;
 }
 /**
@@ -217,10 +199,7 @@ bool SCIsRegularDirectory(const struct dirent *const dir_entry)
  */
 bool SCIsRegularFile(const struct dirent *const dir_entry)
 {
-#ifndef OS_WIN32
     return dir_entry->d_type == DT_REG;
-#endif
-    return false;
 }
 
 /**
@@ -233,11 +212,7 @@ bool SCIsRegularFile(const struct dirent *const dir_entry)
  */
 char *SCRealPath(const char *path, char *resolved_path)
 {
-#ifdef OS_WIN32
-    return _fullpath(resolved_path, path, PATH_MAX);
-#else
     return realpath(path, resolved_path);
-#endif
 }
 
 /*
@@ -270,10 +245,6 @@ const char *SCBasename(const char *path)
  */
 bool SCPathContainsTraversal(const char *path)
 {
-#ifdef OS_WIN32
-    const char *pattern = "..\\";
-#else
     const char *pattern = "../";
-#endif
     return strstr(path, pattern) != NULL;
 }

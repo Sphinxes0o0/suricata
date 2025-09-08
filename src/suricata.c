@@ -99,9 +99,6 @@
 #include "source-af-packet.h"
 #include "source-af-xdp.h"
 #include "source-netmap.h"
-#include "source-dpdk.h"
-#include "source-windivert.h"
-#include "source-windivert-prototypes.h"
 
 #include "unix-manager.h"
 
@@ -119,7 +116,6 @@
 #include "util-cpu.h"
 #include "util-daemon.h"
 #include "util-device-private.h"
-#include "util-dpdk.h"
 #include "util-ebpf.h"
 #include "util-exception-policy.h"
 #include "util-host-os-info.h"
@@ -145,10 +141,6 @@
 #include "util-systemd.h"
 #endif
 
-#ifdef WINDIVERT
-#include "decode-sll.h"
-#include "win32-syscall.h"
-#endif
 
 /*
  * we put this here, because we only use it here in main.
@@ -422,10 +414,6 @@ void GlobalsDestroy(void)
     ParseSizeDeinit();
     DatalinkTableDeinit();
 
-#ifdef HAVE_DPDK
-    DPDKCleanupEAL();
-#endif
-
 #ifdef HAVE_AF_PACKET
     AFPPeersListClean();
 #endif
@@ -669,17 +657,11 @@ static void PrintUsage(const char *progname)
     printf("\t--pfring-cluster-id <id>             : pfring cluster id \n");
     printf("\t--pfring-cluster-type <type>         : pfring cluster type for PF_RING 4.1.2 and later cluster_round_robin|cluster_flow\n");
 #endif /* HAVE_PFRING */
-#ifdef HAVE_DPDK
-    printf("\t--dpdk                               : run in dpdk mode, uses interfaces from "
-           "suricata.yaml\n");
-#endif
+
 #ifdef HAVE_DAG
     printf("\t--dag <dagX:Y>                       : process ERF records from DAG interface X, stream Y\n");
 #endif
-#ifdef WINDIVERT
-    printf("\t--windivert <filter>                 : run in inline WinDivert mode\n");
-    printf("\t--windivert-forward <filter>         : run in inline WinDivert mode, as a gateway\n");
-#endif
+
 #ifdef HAVE_LIBNET11
     printf("\t--reject-dev <dev>                   : send reject packets from this interface\n");
 #endif
@@ -996,15 +978,6 @@ void RegisterAllModules(void)
     TmModuleReceiveNFLOGRegister();
     TmModuleDecodeNFLOGRegister();
 
-    /* windivert */
-    TmModuleReceiveWinDivertRegister();
-    TmModuleVerdictWinDivertRegister();
-    TmModuleDecodeWinDivertRegister();
-
-    /* Dpdk */
-    TmModuleReceiveDPDKRegister();
-    TmModuleDecodeDPDKRegister();
-
     /* Library */
     TmModuleDecodeLibRegister();
 }
@@ -1056,15 +1029,6 @@ static TmEcode ParseInterfacesList(const int runmode, char *pcap_dev)
                 }
             }
         }
-#ifdef HAVE_DPDK
-    } else if (runmode == RUNMODE_DPDK) {
-        char iface_selector[] = "dpdk.interfaces";
-        int ret = LiveBuildDeviceList(iface_selector);
-        if (ret == 0) {
-            SCLogError("No interface found in config for %s", iface_selector);
-            SCReturnInt(TM_ECODE_FAILED);
-        }
-#endif
 #ifdef HAVE_AF_PACKET
     } else if (runmode == RUNMODE_AFP_DEV) {
         /* iface has been set on command line */
@@ -1141,12 +1105,6 @@ static void SCInstanceInit(SCInstance *suri, const char *progname)
 
     suri->keyword_info = NULL;
     suri->runmode_custom_mode = NULL;
-#ifndef OS_WIN32
-    suri->user_name = NULL;
-    suri->group_name = NULL;
-    suri->do_setuid = false;
-    suri->do_setgid = false;
-#endif /* OS_WIN32 */
     suri->userid = 0;
     suri->groupid = 0;
     suri->delayed_detect = 0;
@@ -1290,34 +1248,8 @@ static int ParseCommandLineAfxdp(SCInstance *suri, const char *in_arg)
 #endif
 }
 
-static int ParseCommandLineDpdk(SCInstance *suri, const char *in_arg)
-{
-#ifdef HAVE_DPDK
-    if (suri->run_mode == RUNMODE_UNKNOWN) {
-        suri->run_mode = RUNMODE_DPDK;
-    } else if (suri->run_mode == RUNMODE_DPDK) {
-        SCLogInfo("Multiple dpdk options have no effect on Suricata");
-    } else {
-        SCLogError("more than one run mode "
-                   "has been specified");
-        PrintUsage(suri->progname);
-        return TM_ECODE_FAILED;
-    }
-    return TM_ECODE_OK;
-#else
-    SCLogError("DPDK not enabled. On Linux "
-               "host, make sure to pass --enable-dpdk to "
-               "configure when building.");
-    return TM_ECODE_FAILED;
-#endif
-}
-
 static int ParseCommandLinePcapLive(SCInstance *suri, const char *in_arg)
 {
-#if defined(OS_WIN32) && !defined(HAVE_LIBWPCAP)
-    /* If running on Windows without Npcap, bail early as live capture is not supported. */
-    FatalError("Live capture not available. To support live capture compile against Npcap.");
-#endif
     memset(suri->pcap_dev, 0, sizeof(suri->pcap_dev));
 
     if (in_arg != NULL) {
@@ -1399,9 +1331,6 @@ TmEcode SCParseCommandLine(int argc, char **argv)
         {"pfring-int", required_argument, 0, 0},
         {"pfring-cluster-id", required_argument, 0, 0},
         {"pfring-cluster-type", required_argument, 0, 0},
-#ifdef HAVE_DPDK
-        {"dpdk", 0, 0, 0},
-#endif
         {"af-packet", optional_argument, 0, 0},
         {"af-xdp", optional_argument, 0, 0},
         {"netmap", optional_argument, 0, 0},
@@ -1429,11 +1358,6 @@ TmEcode SCParseCommandLine(int argc, char **argv)
         {"list-keywords", optional_argument, &list_keywords, 1},
         {"runmode", required_argument, NULL, 0},
         {"engine-analysis", 0, &engine_analysis, 1},
-#ifdef OS_WIN32
-		{"service-install", 0, 0, 0},
-		{"service-remove", 0, 0, 0},
-		{"service-change-params", 0, 0, 0},
-#endif /* OS_WIN32 */
         {"pidfile", required_argument, 0, 0},
         {"init-errors-fatal", 0, 0, 0},
         {"disable-detection", 0, 0, 0},
@@ -1446,10 +1370,6 @@ TmEcode SCParseCommandLine(int argc, char **argv)
         {"dag", required_argument, 0, 0},
         {"build-info", 0, &build_info, 1},
         {"data-dir", required_argument, 0, 0},
-#ifdef WINDIVERT
-        {"windivert", required_argument, 0, 0},
-        {"windivert-forward", required_argument, 0, 0},
-#endif
 #ifdef HAVE_LIBNET11
         {"reject-dev", required_argument, 0, 0},
 #endif
@@ -1533,10 +1453,6 @@ TmEcode SCParseCommandLine(int argc, char **argv)
                 suri->capture_plugin_name = optarg;
             } else if (strcmp((long_opts[option_index]).name, "capture-plugin-args") == 0) {
                 suri->capture_plugin_args = optarg;
-            } else if (strcmp((long_opts[option_index]).name, "dpdk") == 0) {
-                if (ParseCommandLineDpdk(suri, optarg) != TM_ECODE_OK) {
-                    return TM_ECODE_FAILED;
-                }
             } else if (strcmp((long_opts[option_index]).name, "af-packet") == 0) {
                 if (ParseCommandLineAfpacket(suri, optarg) != TM_ECODE_OK) {
                     return TM_ECODE_FAILED;
@@ -1638,20 +1554,7 @@ TmEcode SCParseCommandLine(int argc, char **argv)
                 suri->runmode_custom_mode = optarg;
             } else if (strcmp((long_opts[option_index]).name, "engine-analysis") == 0) {
                 // do nothing for now
-            }
-#ifdef OS_WIN32
-            else if (strcmp((long_opts[option_index]).name, "service-install") == 0) {
-                suri->run_mode = RUNMODE_INSTALL_SERVICE;
-                return TM_ECODE_OK;
-            } else if (strcmp((long_opts[option_index]).name, "service-remove") == 0) {
-                suri->run_mode = RUNMODE_REMOVE_SERVICE;
-                return TM_ECODE_OK;
-            } else if (strcmp((long_opts[option_index]).name, "service-change-params") == 0) {
-                suri->run_mode = RUNMODE_CHANGE_SERVICE_PARAMS;
-                return TM_ECODE_OK;
-            }
-#endif /* OS_WIN32 */
-            else if (strcmp((long_opts[option_index]).name, "pidfile") == 0) {
+            } else if (strcmp((long_opts[option_index]).name, "pidfile") == 0) {
                 suri->pid_filename = SCStrdup(optarg);
                 if (suri->pid_filename == NULL) {
                     SCLogError("strdup failed: %s", strerror(errno));
@@ -1732,45 +1635,6 @@ TmEcode SCParseCommandLine(int argc, char **argv)
             } else if (strcmp((long_opts[option_index]).name, "build-info") == 0) {
                 suri->run_mode = RUNMODE_PRINT_BUILDINFO;
                 return TM_ECODE_OK;
-            } else if (strcmp((long_opts[option_index]).name, "windivert-forward") == 0) {
-#ifdef WINDIVERT
-                if (suri->run_mode == RUNMODE_UNKNOWN) {
-                    suri->run_mode = RUNMODE_WINDIVERT;
-                    if (WinDivertRegisterQueue(true, optarg) == -1) {
-                        exit(EXIT_FAILURE);
-                    }
-                } else if (suri->run_mode == RUNMODE_WINDIVERT) {
-                    if (WinDivertRegisterQueue(true, optarg) == -1) {
-                        exit(EXIT_FAILURE);
-                    }
-                } else {
-                    SCLogError("more than one run mode "
-                               "has been specified");
-                    PrintUsage(argv[0]);
-                    exit(EXIT_FAILURE);
-                }
-            }
-            else if(strcmp((long_opts[option_index]).name, "windivert") == 0) {
-                if (suri->run_mode == RUNMODE_UNKNOWN) {
-                    suri->run_mode = RUNMODE_WINDIVERT;
-                    if (WinDivertRegisterQueue(false, optarg) == -1) {
-                        exit(EXIT_FAILURE);
-                    }
-                } else if (suri->run_mode == RUNMODE_WINDIVERT) {
-                    if (WinDivertRegisterQueue(false, optarg) == -1) {
-                        exit(EXIT_FAILURE);
-                    }
-                } else {
-                    SCLogError("more than one run mode "
-                               "has been specified");
-                    PrintUsage(argv[0]);
-                    exit(EXIT_FAILURE);
-                }
-#else
-                SCLogError("WinDivert not enabled. Make sure to pass --enable-windivert to "
-                           "configure when building.");
-                return TM_ECODE_FAILED;
-#endif /* WINDIVERT */
             } else if(strcmp((long_opts[option_index]).name, "reject-dev") == 0) {
 #ifdef HAVE_LIBNET11
                 BUG_ON(optarg == NULL); /* for static analysis */
@@ -2146,35 +2010,6 @@ TmEcode SCParseCommandLine(int argc, char **argv)
     return TM_ECODE_OK;
 }
 
-#ifdef OS_WIN32
-int WindowsInitService(int argc, char **argv)
-{
-    if (SCRunningAsService()) {
-        char path[MAX_PATH];
-        char *p = NULL;
-        strlcpy(path, argv[0], MAX_PATH);
-        if ((p = strrchr(path, '\\'))) {
-            *p = '\0';
-        }
-        if (!SetCurrentDirectory(path)) {
-            SCLogError("Can't set current directory to: %s", path);
-            return -1;
-        }
-        SCLogInfo("Current directory is set to: %s", path);
-        SCServiceInit(argc, argv);
-    }
-
-    /* Windows socket subsystem initialization */
-    WSADATA wsaData;
-    if (0 != WSAStartup(MAKEWORD(2, 2), &wsaData)) {
-        SCLogError("Can't initialize Windows sockets: %d", WSAGetLastError());
-        return -1;
-    }
-
-    return 0;
-}
-#endif /* OS_WIN32 */
-
 static int MayDaemonize(SCInstance *suri)
 {
     if (suri->daemon == 1 && suri->pid_filename == NULL) {
@@ -2421,26 +2256,6 @@ int SCStartInternalRunMode(int argc, char **argv)
             RunUnittests(1, suri->regex_arg);
         case RUNMODE_UNITTEST:
             RunUnittests(0, suri->regex_arg);
-#ifdef OS_WIN32
-        case RUNMODE_INSTALL_SERVICE:
-            if (SCServiceInstall(argc, argv)) {
-                return TM_ECODE_FAILED;
-            }
-            SCLogInfo("Suricata service has been successfully installed.");
-            return TM_ECODE_DONE;
-        case RUNMODE_REMOVE_SERVICE:
-            if (SCServiceRemove()) {
-                return TM_ECODE_FAILED;
-            }
-            SCLogInfo("Suricata service has been successfully removed.");
-            return TM_ECODE_DONE;
-        case RUNMODE_CHANGE_SERVICE_PARAMS:
-            if (SCServiceChangeParams(argc, argv)) {
-                return TM_ECODE_FAILED;
-            }
-            SCLogInfo("Suricata service startup parameters has been successfully changed.");
-            return TM_ECODE_DONE;
-#endif /* OS_WIN32 */
         default:
             /* simply continue for other running mode */
             break;
@@ -2537,20 +2352,6 @@ static int ConfigGetCaptureValue(SCInstance *suri)
                  * default-packet-size until we know more about the
                  * configuration. */
                 break;
-#ifdef WINDIVERT
-            case RUNMODE_WINDIVERT: {
-                /* by default, WinDivert collects from all devices */
-                const int mtu = GetGlobalMTUWin32();
-
-                if (mtu > 0) {
-                    /* SLL_HEADER_LEN is the longest header + 8 for VLAN */
-                    default_packet_size = mtu + SLL_HEADER_LEN + 8;
-                    break;
-                }
-                default_packet_size = DEFAULT_PACKET_SIZE;
-                break;
-            }
-#endif /* WINDIVERT */
             case RUNMODE_NETMAP:
                 /* in netmap igb0+ has a special meaning, however the
                  * interface really is igb0 */
@@ -2973,18 +2774,6 @@ int InitGlobal(void)
 
     SCSetThreadName("Suricata-Main");
 
-    /* Ignore SIGUSR2 as early as possible. We redeclare interest
-     * once we're done launching threads. The goal is to either die
-     * completely or handle any and all SIGUSR2s correctly.
-     */
-#ifndef OS_WIN32
-    UtilSignalHandlerSetup(SIGUSR2, SIG_IGN);
-    if (UtilSignalBlock(SIGUSR2)) {
-        SCLogError("SIGUSR2 initialization error");
-        return EXIT_FAILURE;
-    }
-#endif
-
     ParseSizeInit();
     RunModeRegisterRunModes();
 
@@ -3081,9 +2870,6 @@ void SuricataInit(void)
         goto out;
     }
 
-    if (suricata.run_mode == RUNMODE_DPDK)
-        prerun_snap = SystemHugepageSnapshotCreate();
-
     SCSetStartTime(&suricata);
     if (suricata.run_mode != RUNMODE_UNIX_SOCKET) {
         UnixManagerThreadSpawnNonRunmode(suricata.unix_socket_enabled);
@@ -3162,11 +2948,5 @@ void SuricataPostInit(void)
     OnNotifyRunning();
 
     PostRunStartedDetectSetup(&suricata);
-    if (suricata.run_mode == RUNMODE_DPDK) { // only DPDK uses hpages at the moment
-        SystemHugepageSnapshot *postrun_snap = SystemHugepageSnapshotCreate();
-        SystemHugepageEvaluateHugepages(prerun_snap, postrun_snap);
-        SystemHugepageSnapshotDestroy(prerun_snap);
-        SystemHugepageSnapshotDestroy(postrun_snap);
-    }
     SCPledge();
 }

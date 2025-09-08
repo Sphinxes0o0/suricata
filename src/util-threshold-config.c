@@ -86,11 +86,7 @@ static FILE *g_ut_threshold_fp = NULL;
 #define DETECT_SUPPRESS_REGEX "^,\\s*track\\s*(by_dst|by_src|by_either)\\s*,\\s*ip\\s*([\\[\\],\\$\\s\\da-zA-Z.:/_]+)*\\s*$"
 
 /* Default path for the threshold.config file */
-#if defined OS_WIN32 || defined __CYGWIN__
-#define THRESHOLD_CONF_DEF_CONF_FILEPATH CONFIG_DIR "\\\\threshold.config"
-#else
 #define THRESHOLD_CONF_DEF_CONF_FILEPATH CONFIG_DIR "/threshold.config"
-#endif
 
 static DetectParseRegex *regex_base = NULL;
 static DetectParseRegex *regex_threshold = NULL;

@@ -66,15 +66,6 @@ enum {
     PRIO_HIGH = -2,
 };
 
-#elif OS_WIN32
-
-#include <windows.h>
-enum {
-    PRIO_LOW = THREAD_PRIORITY_LOWEST,
-    PRIO_MEDIUM = THREAD_PRIORITY_NORMAL,
-    PRIO_HIGH = THREAD_PRIORITY_HIGHEST,
-};
-
 #else /* LINUX */
 
 #if HAVE_SYS_SYSCALL_H
@@ -227,11 +218,6 @@ enum {
     _scgetthread_tid; \
 })
 #elif __CYGWIN__
-#define SCGetThreadIdLong(...) ({ \
-    unsigned long _scgetthread_tid = (unsigned long)GetCurrentThreadId(); \
-	_scgetthread_tid; \
-})
-#elif OS_WIN32
 #define SCGetThreadIdLong(...) ({ \
     unsigned long _scgetthread_tid = (unsigned long)GetCurrentThreadId(); \
 	_scgetthread_tid; \

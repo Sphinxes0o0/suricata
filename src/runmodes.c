@@ -32,7 +32,6 @@
 #include "runmodes.h"
 #include "runmode-af-packet.h"
 #include "runmode-af-xdp.h"
-#include "runmode-dpdk.h"
 #include "runmode-erf-dag.h"
 #include "runmode-erf-file.h"
 #include "runmode-ipfw.h"
@@ -43,7 +42,6 @@
 #include "runmode-pcap.h"
 #include "runmode-pcap-file.h"
 #include "runmode-unix-socket.h"
-#include "runmode-windivert.h"
 #include "util-unittest.h"
 #include "util-misc.h"
 #include "util-plugin.h"
@@ -149,18 +147,6 @@ static const char *RunModeTranslateModeToName(int runmode)
 #endif
         case RUNMODE_UNIX_SOCKET:
             return "UNIX_SOCKET";
-        case RUNMODE_WINDIVERT:
-#ifdef WINDIVERT
-            return "WINDIVERT";
-#else
-            return "WINDIVERT(DISABLED)";
-#endif
-        case RUNMODE_DPDK:
-#ifdef HAVE_DPDK
-            return "DPDK";
-#else
-            return "DPDK(DISABLED)";
-#endif
         case RUNMODE_LIB:
             return "LIB";
 
@@ -243,8 +229,6 @@ void RunModeRegisterRunModes(void)
     RunModeIdsNetmapRegister();
     RunModeIdsNflogRegister();
     RunModeUnixSocketRegister();
-    RunModeIpsWinDivertRegister();
-    RunModeDpdkRegister();
     SCRunModeLibIdsRegister();
 #ifdef UNITTESTS
     UtRunModeRegister();
@@ -336,9 +320,6 @@ static const char *RunModeGetConfOrDefault(int capture_mode, const char *capture
             case RUNMODE_AFP_DEV:
                 custom_mode = RunModeAFPGetDefaultMode();
                 break;
-            case RUNMODE_AFXDP_DEV:
-                custom_mode = RunModeAFXDPGetDefaultMode();
-                break;
             case RUNMODE_NETMAP:
                 custom_mode = RunModeNetmapGetDefaultMode();
                 break;
@@ -348,16 +329,6 @@ static const char *RunModeGetConfOrDefault(int capture_mode, const char *capture
             case RUNMODE_NFLOG:
                 custom_mode = RunModeIdsNflogGetDefaultMode();
                 break;
-#ifdef WINDIVERT
-            case RUNMODE_WINDIVERT:
-                custom_mode = RunModeIpsWinDivertGetDefaultMode();
-                break;
-#endif
-#ifdef HAVE_DPDK
-            case RUNMODE_DPDK:
-                custom_mode = RunModeDpdkGetDefaultMode();
-                break;
-#endif
             case RUNMODE_LIB:
                 custom_mode = SCRunModeLibGetDefaultMode();
                 break;

@@ -25,21 +25,10 @@
 #ifndef SURICATA_UTIL_PATH_H
 #define SURICATA_UTIL_PATH_H
 
-#ifdef OS_WIN32
-typedef struct _stat SCStat;
-#define SCFstatFn(fd, statbuf)      _fstat((fd), (statbuf))
-#define SCStatFn(pathname, statbuf) _stat((pathname), (statbuf))
-#else
 typedef struct stat SCStat;
 #define SCFstatFn(fd, statbuf)      fstat((fd), (statbuf))
 #define SCStatFn(pathname, statbuf) stat((pathname), (statbuf))
-#endif
-
-#if defined OS_WIN32 || defined __CYGWIN__
-#define PATH_SEPARATOR_SIZE 2
-#else
 #define PATH_SEPARATOR_SIZE 1
-#endif
 
 #ifndef HAVE_NON_POSIX_MKDIR
     #define SCMkDir(a, b) mkdir(a, b)

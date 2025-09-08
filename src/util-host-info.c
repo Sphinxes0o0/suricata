@@ -28,8 +28,6 @@
 #include "util-host-info.h"
 #include "util-byte.h"
 #include "util-debug.h"
-
-#ifndef OS_WIN32
 #include <sys/utsname.h>
 
 #define VERSION_REGEX "^([0-9]+)\\.([0-9]+)"
@@ -115,13 +113,3 @@ int SCKernelVersionIsAtLeast(int major, int minor)
 error:
     return 0;
 }
-
-#else /* OS_WIN32 */
-
-int SCKernelVersionIsAtLeast(int major, int minor)
-{
-    SCLogError("OS compare is not supported on Windows");
-    return 0;
-}
-
-#endif /* OS_WIN32 */

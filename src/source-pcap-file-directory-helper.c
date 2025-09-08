@@ -234,8 +234,6 @@ int PcapDirectoryGetModifiedTime(char const *file, struct timespec *out)
 #ifdef OS_DARWIN
     out->tv_sec = buf.st_mtimespec.tv_sec;
     out->tv_nsec = buf.st_mtimespec.tv_nsec;
-#elif OS_WIN32
-    out->tv_sec = buf.st_mtime;
 #else
     out->tv_sec = buf.st_mtim.tv_sec;
     out->tv_nsec = buf.st_mtim.tv_nsec;

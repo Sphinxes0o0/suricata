@@ -135,14 +135,11 @@ void Daemonize (void)
             if ((chdir(daemondir)) < 0) {
                 FatalError("Error changing to working directory");
             }
-        }
-#ifndef OS_WIN32
-        else {
+        } else {
             if (chdir("/") < 0) {
                 SCLogError("Error changing to working directory '/'");
             }
         }
-#endif
 
         SetupLogging();
 

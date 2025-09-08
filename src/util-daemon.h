@@ -24,12 +24,7 @@
 #ifndef SURICATA_UTIL_DAEMON_H
 #define SURICATA_UTIL_DAEMON_H
 
-#ifdef OS_WIN32
-#define Daemonize()
-#else
 void Daemonize (void);
-#endif
-
 int CheckValidDaemonModes (int, int);
 
 #endif /* SURICATA_UTIL_DAEMON_H */

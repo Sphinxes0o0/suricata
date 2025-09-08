@@ -58,12 +58,7 @@
 #include "util-profiling.h"
 #include "util-validate.h"
 #include "util-cidr.h"
-
-#ifdef OS_WIN32
-#include <winsock.h>
-#else
 #include <netinet/in.h>
-#endif /* OS_WIN32 */
 
 /**
  * \brief This function creates a new IPOnlyCIDRItem

@@ -70,10 +70,7 @@ enum PktSrcEnum {
 #include "source-pcap.h"
 #include "source-af-packet.h"
 #include "source-netmap.h"
-#include "source-windivert.h"
-#ifdef HAVE_DPDK
-#include "source-dpdk.h"
-#endif
+
 #ifdef HAVE_AF_XDP
 #include "source-af-xdp.h"
 #endif
@@ -571,12 +568,7 @@ typedef struct Packet_
 #ifdef HAVE_NETMAP
         NetmapPacketVars netmap_v;
 #endif
-#ifdef WINDIVERT
-        WinDivertPacketVars windivert_v;
-#endif /* WINDIVERT */
-#ifdef HAVE_DPDK
-        DPDKPacketVars dpdk_v;
-#endif
+
 #ifdef HAVE_AF_XDP
         AFXDPPacketVars afxdp_v;
 #endif
