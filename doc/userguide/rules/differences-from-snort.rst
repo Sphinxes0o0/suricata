@@ -522,15 +522,6 @@ File Extraction
 -  `https://blog.inliniac.net/2011/11/29/file-extraction-in-suricata/ <https://blog.inliniac.net/2011/11/29/file-extraction-in-suricata/>`_
 -  `https://blog.inliniac.net/2014/11/11/smtp-file-extraction-in-suricata/ <https://blog.inliniac.net/2014/11/11/smtp-file-extraction-in-suricata/>`_
 
-Lua Scripting
--------------
-
--  Suricata has the ``lua`` keyword which allows for a
-   rule to reference a Lua script that can access the packet, payload,
-   HTTP buffers, etc.
--  Provides powerful flexibility and capabilities that Snort does
-   not have.
--  More details in: :ref:`lua-detection`
 
 Fast Pattern
 ------------

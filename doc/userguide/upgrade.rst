@@ -91,13 +91,6 @@ Major changes
   Suricata 8.0, ``stream.checksum-validation`` no longer affects the checksum rule keywords.
   E.g., ``ipv4-csum: valid`` will only match if the check sum is valid, even when engine
   checksum validations are disabled.
-- Lua detection scripts (rules) now run in a sandboxed
-  environment. See :ref:`lua-detection`. Lua rules are now also
-  enabled by default.
-- Lua output scripts have no default module search path, a search path
-  will need to be set before external modules can be loaded. See the
-  new default configuration file or :ref:`lua-output-yaml` for more
-  details.
 - If the configuration value ``ftp.memcap`` is invalid, Suricata will set it to ``0`` which means
   no limit will be placed. In previous Suricata  releases, Suricata would terminate execution. A
   warning message will be displayed `Invalid value <value> for ftp.memcap` when this occurs.
@@ -129,14 +122,14 @@ Major changes
     can be used to tune this value for TPACKET_V2. Due to the
     increased block size, memory usage has been increased, but
     should not be an issue in most cases.
-- DPDK interface settings can now be configured automatically by setting 
+- DPDK interface settings can now be configured automatically by setting
   ``auto`` to ``mempool-size``, ``mempool-cache-size``, ``rx-descriptors``,
   ``tx-descriptors``. See :ref:`dpdk-automatic-interface-configuration`.
 - DPDK interface mempools are now allocated per thread instead of per port. This
   change improves performance and should not be visible from the user
   configuration perspective.
 - DPDK supports link state check, allowing Suricata to start only when the link
-  is up. This is especially useful for Intel E810 (ice) NICs as they need 
+  is up. This is especially useful for Intel E810 (ice) NICs as they need
   a few seconds before they are ready to receive packets. With this check
   disabled, Suricata reports as started but only begins processing packets
   after the previously mentioned interval. Other cards were not observed to have
@@ -240,7 +233,6 @@ Security changes
   filename is specified as part of a rule. See :ref:`Datasets Security
   <datasets_security>` and :ref:`Datasets File Locations
   <datasets_file_locations>` for more information.
-- Lua rules are now disabled by default (change also introduced in 6.0.13), see :ref:`lua-detection`.
 
 Removals
 ~~~~~~~~

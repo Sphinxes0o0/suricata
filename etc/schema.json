@@ -3090,7 +3090,7 @@
                                 "$comment": "keyword: app-layer-event:mdns.name_too_long (https://redmine.openinfosecfoundation.org/issues/7784)"
                             },
                             "rrtype": {
-                                "type": "string", 
+                                "type": "string",
                                 "description": "Type of resource being requested"
                             }
                         }
@@ -6566,30 +6566,6 @@
                                         "type": "integer",
                                         "description": "Count of rules that were skipped due to missing requirements"
                                     }
-                                }
-                            }
-                        },
-                        "lua": {
-                            "type": "object",
-                            "additionalProperties": false,
-                            "properties": {
-                                "blocked_function_errors": {
-                                    "type": "integer",
-                                    "description":
-                                            "Counter for Lua scripts failing due to blocked functions being called"
-                                },
-                                "errors": {
-                                    "type": "integer",
-                                    "description": "Errors encountered while running Lua scripts"
-                                },
-                                "instruction_limit_errors": {
-                                    "type": "integer",
-                                    "description":
-                                            "Count of Lua rules exceeding the instruction limit"
-                                },
-                                "memory_limit_errors": {
-                                    "type": "integer",
-                                    "description": "Count of Lua rules exceeding the memory limit"
                                 }
                             }
                         },

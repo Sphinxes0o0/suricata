@@ -48,7 +48,6 @@ Suricata Rules
    ipaddr
    config
    datasets
-   lua-detection
    differences-from-snort
    multi-buffer-matching
    tag

@@ -98,8 +98,6 @@ pub mod ja4;
 pub mod tls_version;
 pub mod handshake;
 
-pub mod lua;
-
 pub mod dns;
 pub mod mdns;
 pub mod nfs;
@@ -143,6 +141,5 @@ pub mod flow;
 pub mod direction;
 
 #[allow(unused_imports)]
-pub use suricata_lua_sys;
 //Re-export htp symbols
 pub use htp::c_api::*;

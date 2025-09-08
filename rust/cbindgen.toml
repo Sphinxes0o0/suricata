@@ -97,7 +97,6 @@ include = [
 exclude = [
     "AppLayerDecoderEvents",
     "AppLayerParserState",
-    "CLuaState",
     "DetectEngineState",
     "DetectEngineThreadCtx",
     "GenericVar",
@@ -118,7 +117,7 @@ exclude = [
     "SRepCatGetByShortname",
     "SIGMATCH_NOOPT",
     "SIGMATCH_INFO_STICKY_BUFFER",
-    "FtpCommand",
+    "FtpCommand"
 ]
 
 # Types of items that we'll generate. If empty, then all types of item are emitted.
@@ -144,7 +143,6 @@ item_types = ["enums","structs","opaque","functions","constants"]
 # prefix = "capi_"
 [export.rename]
 "JsonT" = "json_t"
-"CLuaState" = "lua_State"
 "JsonBuilder" = "SCJsonBuilder"
 "JsonBuilderMark" = "SCJsonBuilderMark"
 

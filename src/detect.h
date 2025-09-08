@@ -1370,18 +1370,6 @@ typedef struct DetectEngineThreadCtx_ {
     AppLayerDecoderEvents *decoder_events;
     uint16_t events;
 
-    /** stats id for lua rule errors */
-    uint16_t lua_rule_errors;
-
-    /** stats id for lua blocked function counts */
-    uint16_t lua_blocked_function_errors;
-
-    /** stats if for lua instruction limit errors */
-    uint16_t lua_instruction_limit_errors;
-
-    /** stat of lua memory limit errors. */
-    uint16_t lua_memory_limit_errors;
-
 #ifdef DEBUG
     uint64_t pkt_stream_add_cnt;
     uint64_t payload_mpm_cnt;

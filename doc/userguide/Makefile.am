@@ -19,7 +19,6 @@ EXTRA_DIST = \
 	install.rst \
 	install \
 	licenses \
-	lua \
 	make-sense-alerts.rst \
 	manpages \
 	output \

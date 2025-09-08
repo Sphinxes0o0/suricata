@@ -701,38 +701,6 @@ static void RunModeInitializeEveOutput(
     }
 }
 
-static void RunModeInitializeLuaOutput(
-        SCConfNode *conf, OutputCtx *parent_ctx, LoggerId *logger_bits)
-{
-    OutputModule *lua_module = OutputGetModuleByConfName("lua");
-    BUG_ON(lua_module == NULL);
-
-    SCConfNode *scripts = SCConfNodeLookupChild(conf, "scripts");
-    BUG_ON(scripts == NULL); //TODO
-
-    OutputModule *m;
-    TAILQ_FOREACH(m, &parent_ctx->submodules, entries) {
-        SCLogDebug("m %p %s:%s", m, m->name, m->conf_name);
-
-        SCConfNode *script = NULL;
-        TAILQ_FOREACH(script, &scripts->head, next) {
-            SCLogDebug("script %s", script->val);
-            if (strcmp(script->val, m->conf_name) == 0) {
-                break;
-            }
-        }
-        BUG_ON(script == NULL);
-
-        /* pass on parent output_ctx */
-        OutputInitResult result = m->InitSubFunc(script, parent_ctx);
-        if (!result.ok || result.ctx == NULL) {
-            continue;
-        }
-
-        AddOutputToFreeList(m, result.ctx);
-        SetupOutput(m->name, m, result.ctx, logger_bits);
-    }
-}
 
 extern bool g_file_logger_enabled;
 extern bool g_filedata_logger_enabled;
@@ -826,12 +794,6 @@ void RunModeInitializeOutputs(void)
                 /* add 'eve-log' to free list as it's the owner of the
                  * main output ctx from which the sub-modules share the
                  * LogFileCtx */
-                AddOutputToFreeList(module, output_ctx);
-            } else if (strcmp(output->val, "lua") == 0) {
-                SCLogDebug("handle lua");
-                if (output_ctx == NULL)
-                    continue;
-                RunModeInitializeLuaOutput(output_config, output_ctx, logger_bits);
                 AddOutputToFreeList(module, output_ctx);
             } else {
                 AddOutputToFreeList(module, output_ctx);

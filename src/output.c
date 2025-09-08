@@ -76,7 +76,6 @@
 #include "output-json-dhcp.h"
 #include "output-json-mqtt.h"
 #include "output-json-pgsql.h"
-#include "output-lua.h"
 #include "output-json-dnp3.h"
 #include "output-json-metadata.h"
 #include "output-json-dcerpc.h"
@@ -1091,8 +1090,6 @@ void OutputRegisterLoggers(void)
 {
     /* custom format log*/
     LogCustomFormatRegister();
-
-    LuaLogRegister();
     /* fast log */
     AlertFastLogRegister();
     /* debug log */

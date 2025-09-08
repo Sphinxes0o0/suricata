@@ -42,7 +42,6 @@
 #include "detect-ipproto.h"
 #include "detect-flow.h"
 #include "detect-app-layer-protocol.h"
-#include "detect-lua.h"
 #include "detect-app-layer-event.h"
 #include "detect-http-method.h"
 
@@ -1145,7 +1144,6 @@ static bool IsBuiltIn(const char *n)
  *
  *  Register each hook in each app protocol as:
  *  <alproto>:<hook name>:generic
- *  These lists can be used by lua scripts to hook into.
  *
  *  \todo move elsewhere? maybe a detect-engine-hook.c?
  */

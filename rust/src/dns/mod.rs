@@ -20,5 +20,4 @@
 pub mod detect;
 pub mod dns;
 pub mod log;
-pub mod lua;
 pub mod parser;

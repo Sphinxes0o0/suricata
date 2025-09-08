@@ -9,8 +9,7 @@ Example::
   config dns any any -> any any (dns.query; content:"suricata"; config: logging disable, type tx, scope tx; sid:1;)
 
 This example will detect if a DNS query contains the string `suricata` and if
-so disable the DNS transaction logging. This means that `eve.json` records,
-but also Lua output, will not be generated/triggered for this DNS transaction.
+so disable the DNS transaction logging. This means that `eve.json` records.
 
 Example::
 

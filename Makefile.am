@@ -5,7 +5,6 @@ ACLOCAL_AMFLAGS = -I m4
 EXTRA_DIST = ChangeLog COPYING LICENSE suricata.yaml.in \
              threshold.config SECURITY.md \
              $(SURICATA_UPDATE_DIR) \
-	     lua \
 	     acsite.m4 \
 	     scripts/generate-images.sh \
 	     scripts/docs-almalinux9-minimal-build.sh \

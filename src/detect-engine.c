@@ -3402,20 +3402,6 @@ TmEcode DetectEngineThreadCtxInit(ThreadVars *tv, void *initdata, void **data)
     det_ctx->counter_alerts_overflow = StatsRegisterCounter("detect.alert_queue_overflow", tv);
     det_ctx->counter_alerts_suppressed = StatsRegisterCounter("detect.alerts_suppressed", tv);
 
-    /* Register counter for Lua rule errors. */
-    det_ctx->lua_rule_errors = StatsRegisterCounter("detect.lua.errors", tv);
-
-    /* Register a counter for Lua blocked function attempts. */
-    det_ctx->lua_blocked_function_errors =
-            StatsRegisterCounter("detect.lua.blocked_function_errors", tv);
-
-    /* Register a counter for Lua instruction limit errors. */
-    det_ctx->lua_instruction_limit_errors =
-            StatsRegisterCounter("detect.lua.instruction_limit_errors", tv);
-
-    /* Register a counter for Lua memory limit errors. */
-    det_ctx->lua_memory_limit_errors = StatsRegisterCounter("detect.lua.memory_limit_errors", tv);
-
     det_ctx->json_content = NULL;
     det_ctx->json_content_capacity = 0;
     det_ctx->json_content_len = 0;

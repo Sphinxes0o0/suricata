@@ -43,7 +43,7 @@ if DEBUG_VALIDATION
 RUST_FEATURES +=	debug-validate
 endif
 
-if RUST_CROSS_COMPILE 
+if RUST_CROSS_COMPILE
 RUST_TARGET = --target $(host_triplet)
 endif
 
@@ -51,18 +51,14 @@ if HAVE_CYGPATH
 CARGO_ENV =	@rustup_home@ \
 		CARGO_HOME="$(CARGO_HOME)" \
 		CARGO_TARGET_DIR="$(e_rustdir)/target" \
-		SURICATA_LUA_SYS_HEADER_DST="$(e_rustdir)/gen"
 else
 CARGO_ENV =	@rustup_home@ \
 		CARGO_HOME="$(CARGO_HOME)" \
 		CARGO_TARGET_DIR="$(abs_top_builddir)/rust/target" \
-		SURICATA_LUA_SYS_HEADER_DST="$(abs_top_builddir)/rust/gen"
 endif
 
 CARGO_ENV +=	LOCALSTATEDIR=$(e_localstatedir)
 
-# To pass specific CFLAGS to Lua.
-CARGO_ENV +=	SURICATA_LUA_SYS_CFLAGS="$(SURICATA_LUA_SYS_CFLAGS)"
 
 all-local: Cargo.toml
 	mkdir -p $(abs_top_builddir)/rust/gen

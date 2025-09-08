@@ -608,9 +608,8 @@ mod test {
         let requires = parse_requires("  feature geoip").unwrap();
         assert_eq!(&requires.features[0], "geoip");
 
-        let requires = parse_requires("  feature geoip,    feature    lua  ").unwrap();
+        let requires = parse_requires("  feature geoip").unwrap();
         assert_eq!(&requires.features[0], "geoip");
-        assert_eq!(&requires.features[1], "lua");
 
         let requires = parse_requires("version >=7").unwrap();
         assert_eq!(
@@ -785,25 +784,6 @@ mod test {
         assert!(check_requires(&requires, &SuricataVersion::new(7, 0, 0)).is_err());
         assert!(check_requires(&requires, &SuricataVersion::new(8, 0, 0)).is_ok());
         assert!(check_requires(&requires, &SuricataVersion::new(9, 0, 0)).is_err());
-
-        // Unknown keyword.
-        let requires = parse_requires("feature true_lua, foo bar, version >= 7.0.3").unwrap();
-        assert_eq!(
-            requires,
-            Requires {
-                features: vec!["true_lua".to_string()],
-                keywords: vec![],
-                version: vec![vec![RuleRequireVersion {
-                    op: VersionCompareOp::Gte,
-                    version: SuricataVersion {
-                        major: 7,
-                        minor: 0,
-                        patch: 3,
-                    }
-                }]],
-                unknown: vec!["foo bar".to_string()],
-            }
-        );
 
         // This should not pass the requires check as it contains an
         // unknown requires keyword.

@@ -247,8 +247,6 @@ noinst_HEADERS = \
 	detect-krb5-sname.h \
 	detect-krb5-ticket-encryption.h \
 	detect-l3proto.h \
-	detect-lua-extensions.h \
-	detect-lua.h \
 	detect-mark.h \
 	detect-metadata.h \
 	detect-modbus.h \
@@ -323,7 +321,6 @@ noinst_HEADERS = \
 	detect-tls-version.h \
 	detect-tls.h \
 	detect-tos.h \
-	detect-transform-luaxform.h \
 	detect-transform-pcrexform.h \
 	detect-ttl.h \
 	detect-udphdr.h \
@@ -404,7 +401,6 @@ noinst_HEADERS = \
 	output-json-stats.h \
 	output-json-tls.h \
 	output-json.h \
-	output-lua.h \
 	output-packet.h \
 	output-stats.h \
 	output-streaming.h \
@@ -521,31 +517,6 @@ noinst_HEADERS = \
 	util-landlock.h \
 	util-log-redis.h \
 	util-logopenfile.h \
-	util-lua-base64lib.h \
-	util-lua-builtins.h \
-	util-lua-common.h \
-	util-lua-config.h \
-	util-lua-dataset.h \
-	util-lua-dnp3-objects.h \
-	util-lua-dnp3.h \
-	util-lua-dns.h \
-	util-lua-filelib.h \
-	util-lua-flowintlib.h \
-	util-lua-flowlib.h \
-	util-lua-flowvarlib.h \
-	util-lua-bytevarlib.h \
-	util-lua-hashlib.h \
-	util-lua-http.h \
-	util-lua-ja3.h \
-	util-lua-log.h \
-	util-lua-packetlib.h \
-	util-lua-rule.h \
-	util-lua-sandbox.h \
-	util-lua-smtp.h \
-	util-lua-ssh.h \
-	util-lua-tls.h \
-	util-lua-util.h \
-	util-lua.h \
 	util-macset.h \
 	util-magic.h \
 	util-mem.h \
@@ -830,8 +801,6 @@ libsuricata_c_a_SOURCES = \
 	detect-krb5-sname.c \
 	detect-krb5-ticket-encryption.c \
 	detect-l3proto.c \
-	detect-lua-extensions.c \
-	detect-lua.c \
 	detect-mark.c \
 	detect-metadata.c \
 	detect-modbus.c \
@@ -906,7 +875,6 @@ libsuricata_c_a_SOURCES = \
 	detect-tls-version.c \
 	detect-tls.c \
 	detect-tos.c \
-	detect-transform-luaxform.c \
 	detect-transform-pcrexform.c \
 	detect-ttl.c \
 	detect-udphdr.c \
@@ -985,7 +953,6 @@ libsuricata_c_a_SOURCES = \
 	output-json-stats.c \
 	output-json-tls.c \
 	output-json.c \
-	output-lua.c \
 	output-packet.c \
 	output-stats.c \
 	output-streaming.c \
@@ -1088,31 +1055,6 @@ libsuricata_c_a_SOURCES = \
 	util-landlock.c \
 	util-log-redis.c \
 	util-logopenfile.c \
-	util-lua-base64lib.c \
-	util-lua-builtins.c \
-	util-lua-common.c \
-	util-lua-config.c \
-	util-lua-dataset.c \
-	util-lua-dnp3-objects.c \
-	util-lua-dnp3.c \
-	util-lua-dns.c \
-	util-lua-filelib.c \
-	util-lua-flowintlib.c \
-	util-lua-flowlib.c \
-	util-lua-flowvarlib.c \
-	util-lua-bytevarlib.c \
-	util-lua-hashlib.c \
-	util-lua-http.c \
-	util-lua-ja3.c \
-	util-lua-log.c \
-	util-lua-packetlib.c \
-	util-lua-rule.c \
-	util-lua-sandbox.c \
-	util-lua-smtp.c \
-	util-lua-ssh.c \
-	util-lua-tls.c \
-	util-lua-util.c \
-	util-lua.c \
 	util-macset.c \
 	util-magic.c \
 	util-mem.c \

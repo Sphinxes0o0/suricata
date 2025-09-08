@@ -538,13 +538,13 @@ In multi mode the filename takes a few special variables:
   - %n representing the thread number
   - %i representing the thread id
   - %t representing the timestamp (secs or secs.usecs based on 'ts-format')
-  
+
   Example: filename: pcap.%n.%t
 
 .. note:: It is possible to use directories but the directories are not
   created by Suricata. For example ``filename: pcaps/%n/log.%s`` will log into
   the pre-existing ``pcaps`` directory and per thread sub directories.
-  
+
 .. note:: that the limit and max-files settings are enforced per thread. So the
   size limit using 8 threads with 1000mb files and 2000 files is about 16TiB.
 
@@ -2145,8 +2145,8 @@ A logging line exists of two parts. First it displays meta information
 
   i: suricata: This is Suricata version 7.0.2 RELEASE running in USER mode
 
-(Here the part until the second `:` is the meta info, 
-"This is Suricata version 7.0.2 RELEASE running in USER mode" is the actual 
+(Here the part until the second `:` is the meta info,
+"This is Suricata version 7.0.2 RELEASE running in USER mode" is the actual
 message.)
 
 It is possible to determine which information will be displayed in
@@ -3067,30 +3067,3 @@ you probably want to set `run-as` configuration parameter so as to drop root pri
 Beyond suricata.yaml, other ways to harden Suricata are
 - compilation : enabling ASLR and other exploit mitigation techniques.
 - environment : running Suricata on a device that has no direct access to Internet.
-
-.. _suricata-yaml-lua-config:
-
-Lua
-~~~
-
-Suricata 8.0 sandboxes Lua rules by default. The restrictions on the sandbox for Lua rules can be
-modified in the ``security.lua`` section of the configuration file. This section also applies to
-Lua transforms. Additionally, Lua rules can be completely disabled in the same way as for as the
-Suricata 7.0 default:
-
-::
-
-   security:
-     lua:
-       # Allow Lua rules. Enabled by default.
-       #allow-rules: true
-
-       # Upper bound of allocations by a Lua rule before it will fail
-       #max-bytes: 500000 
-
-       # Upper bound of lua instructions by a Lua rule before it will fail
-       #max-instructions: 500000
-
-       # Allow dangerous lua operations like external packages and file io
-       #allow-restricted-functions: false
-

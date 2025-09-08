@@ -104,7 +104,6 @@
 #include "detect-engine-siggroup.h"
 
 #include "util-streaming-buffer.h"
-#include "util-lua.h"
 #include "tm-modules.h"
 #include "tmqh-packetpool.h"
 #include "decode-chdlc.h"

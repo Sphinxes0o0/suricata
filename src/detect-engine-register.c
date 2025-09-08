@@ -183,7 +183,6 @@
 #include "detect-tos.h"
 #include "detect-app-layer-event.h"
 #include "detect-app-layer-state.h"
-#include "detect-lua.h"
 #include "detect-iprep.h"
 #include "detect-geoip.h"
 #include "detect-app-layer-protocol.h"
@@ -223,7 +222,6 @@
 #include "detect-engine-content-inspection.h"
 
 #include "detect-transform-pcrexform.h"
-#include "detect-transform-luaxform.h"
 
 #include "util-rule-vars.h"
 
@@ -270,7 +268,6 @@
 #include "stream-tcp.h"
 #include "stream-tcp-inline.h"
 
-#include "util-lua.h"
 #include "util-var-name.h"
 #include "util-classification-config.h"
 #include "util-threshold-config.h"
@@ -698,7 +695,6 @@ void SigTableSetup(void)
     DetectByteExtractRegister();
     DetectFiledataRegister();
     DetectPktDataRegister();
-    DetectLuaRegister();
     DetectIPRepRegister();
     DetectAppLayerProtocolRegister();
     DetectBase64DecodeRegister();
@@ -753,7 +749,6 @@ void SigTableSetup(void)
     DetectTransformHeaderLowercaseRegister();
     DetectTransformFromBase64DecodeRegister();
     SCDetectTransformDomainRegister();
-    DetectTransformLuaxformRegister();
 
     DetectFileHandlerRegister();
 

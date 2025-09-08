@@ -24,7 +24,6 @@ This is the documentation for Suricata |version|.
    setting-up-ipsinline-for-linux
    setting-up-ipsinline-for-windows
    output/index.rst
-   lua/index.rst
    file-extraction/file-extraction.rst
    public-data-sets
    capture-hardware/index.rst

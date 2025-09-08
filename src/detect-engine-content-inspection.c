@@ -48,7 +48,6 @@
 #include "detect-urilen.h"
 #include "detect-engine-uint.h"
 #include "detect-bsize.h"
-#include "detect-lua.h"
 #include "detect-base64-decode.h"
 #include "detect-base64-data.h"
 #include "detect-dataset.h"
@@ -62,8 +61,6 @@
 #include "util-unittest.h"
 #include "util-unittest-helper.h"
 #include "util-profiling.h"
-
-#include "util-lua.h"
 
 #ifdef UNITTESTS
 thread_local uint32_t ut_inspection_recursion_counter = 0;
@@ -679,17 +676,6 @@ static int DetectEngineContentInspectionInternal(DetectEngineThreadCtx *det_ctx,
             goto match;
         }
         goto no_match_discontinue;
-    } else if (smd->type == DETECT_LUA) {
-        SCLogDebug("lua starting");
-
-        if (DetectLuaMatchBuffer(det_ctx, s, smd, buffer, buffer_len,
-                    det_ctx->buffer_offset, f) != 1)
-        {
-            SCLogDebug("lua no_match");
-            goto no_match;
-        }
-        SCLogDebug("lua match");
-        goto match;
     } else if (smd->type == DETECT_BASE64_DECODE) {
         if (DetectBase64DecodeDoMatch(det_ctx, s, smd, buffer, buffer_len)) {
             if (s->sm_arrays[DETECT_SM_LIST_BASE64_DATA] != NULL) {
